@@ -600,6 +600,284 @@ body { background-image: radial-gradient(ellipse at 12% 18%, rgba(201,168,76,.03
   .fade-in, .fade-in.reveal-ready:not(.is-visible) { opacity: 1 !important; transform: none !important; }
 }
 
+
+
+    /* === Comprehensive project quiz (inserted before the resources) === */
+    .project-quiz-section { position: relative; }
+    .project-quiz-shell {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(201,168,76,0.24);
+      background: linear-gradient(145deg, rgba(21,59,44,0.92), rgba(10,31,26,0.96));
+      box-shadow: 0 18px 48px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.035);
+    }
+    .project-quiz-shell::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      top: -170px;
+      left: -100px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(201,168,76,0.13), transparent 68%);
+      animation: pqAmbient 8s ease-in-out infinite alternate;
+    }
+    .pq-intro, .pq-game, .pq-result, .pq-review { position: relative; z-index: 1; }
+    .pq-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 30px;
+      background: rgba(201,168,76,0.08);
+      color: var(--gold-light);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .pq-intro h3, .pq-result h3 {
+      color: var(--gold-light);
+      font-size: clamp(1.3rem, 4vw, 1.75rem);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .pq-intro p, .pq-result p { color: var(--text-secondary); }
+    .pq-facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 9px;
+      margin: 20px 0;
+    }
+    .pq-fact {
+      min-width: 0;
+      padding: 12px 8px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 13px;
+      background: rgba(255,255,255,0.035);
+      text-align: center;
+    }
+    .pq-fact strong { display: block; color: var(--gold-light); font-size: 1.28rem; line-height: 1.25; }
+    .pq-fact span { color: var(--text-muted); font-size: 0.73rem; }
+    .pq-primary-btn, .pq-next-btn, .pq-secondary-btn {
+      min-height: 48px;
+      padding: 11px 20px;
+      border: 1px solid rgba(232,201,106,0.4);
+      border-radius: 13px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease, border-color .22s ease;
+    }
+    .pq-primary-btn, .pq-next-btn {
+      color: #10251c;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      box-shadow: 0 7px 20px rgba(201,168,76,0.17);
+    }
+    .pq-runtime-status {
+      margin-top: 12px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      background: rgba(255,255,255,0.045);
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+    .pq-runtime-status[data-state="ready"] { color: #a8dfbd; }
+    .pq-runtime-status[data-state="error"] { color: #ffd0a6; }
+    .pq-secondary-btn {
+      color: var(--gold-light);
+      background: rgba(201,168,76,0.08);
+    }
+    .pq-primary-btn:active, .pq-next-btn:active, .pq-secondary-btn:active { transform: scale(.975); }
+    @media (hover:hover) and (pointer:fine) {
+      .pq-primary-btn:hover, .pq-next-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(201,168,76,0.25); }
+      .pq-secondary-btn:hover { background: rgba(201,168,76,0.15); }
+    }
+    .pq-game-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+      font-size: .85rem;
+      font-weight: 700;
+    }
+    .pq-count { color: var(--gold-light); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pq-progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.08);
+      margin-bottom: 18px;
+    }
+    .pq-progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #8b7134, var(--gold-light), #fff0b0);
+      box-shadow: 0 0 14px rgba(232,201,106,0.32);
+      transition: width .45s cubic-bezier(.2,.75,.25,1);
+    }
+    .pq-axis-label {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: rgba(45,106,79,0.23);
+      color: #9bd5b5;
+      border: 1px solid rgba(125,211,168,0.13);
+      font-size: .77rem;
+      margin-bottom: 12px;
+    }
+    .pq-question {
+      color: var(--text-primary);
+      font-size: clamp(1.08rem, 3.5vw, 1.35rem);
+      font-weight: 800;
+      line-height: 1.65;
+      margin-bottom: 18px;
+      animation: pqQuestionIn .36s ease both;
+    }
+    .pq-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .pq-option, .pq-primary-btn, .pq-secondary-btn, .pq-next-btn {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pq-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      min-height: 66px;
+      padding: 13px 12px;
+      border: 1px solid rgba(255,255,255,0.095);
+      border-radius: 13px;
+      background: rgba(255,255,255,0.045);
+      color: var(--text-primary);
+      text-align: right;
+      font: inherit;
+      font-size: .92rem;
+      line-height: 1.55;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+      animation: pqOptionIn .35s ease both;
+    }
+    .pq-option:nth-child(2) { animation-delay: 35ms; }
+    .pq-option:nth-child(3) { animation-delay: 70ms; }
+    .pq-option:nth-child(4) { animation-delay: 105ms; }
+    .pq-option:focus-visible, .pq-primary-btn:focus-visible, .pq-next-btn:focus-visible, .pq-secondary-btn:focus-visible {
+      outline: 3px solid rgba(232,201,106,0.72);
+      outline-offset: 3px;
+    }
+    .pq-option:active:not(:disabled) { transform: scale(.985); }
+    @media (hover:hover) and (pointer:fine) {
+      .pq-option:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: rgba(201,168,76,0.42);
+        background: rgba(201,168,76,0.075);
+      }
+    }
+    .pq-option:disabled { cursor: default; opacity: .93; }
+    .pq-option-letter {
+      flex: 0 0 27px;
+      width: 27px;
+      height: 27px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      color: var(--gold-light);
+      background: rgba(201,168,76,0.12);
+      font-size: .8rem;
+      font-weight: 900;
+      direction: ltr;
+    }
+    .pq-option.is-correct {
+      border-color: rgba(125,211,168,0.8);
+      background: rgba(45,106,79,0.25);
+      box-shadow: inset 0 0 0 1px rgba(125,211,168,0.12);
+    }
+    .pq-option.is-correct .pq-option-letter { background: rgba(125,211,168,0.2); color: #a8efc8; }
+    .pq-option.is-wrong {
+      border-color: rgba(232,138,138,0.75);
+      background: rgba(155,58,58,0.2);
+    }
+    .pq-option.is-wrong .pq-option-letter { background: rgba(232,138,138,0.15); color: #ffc0c0; }
+    .pq-feedback {
+      margin-top: 16px;
+      padding: 15px 16px;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-right: 3px solid var(--gold);
+      border-radius: 12px;
+      background: rgba(201,168,76,0.065);
+      animation: pqFeedbackIn .35s ease both;
+    }
+    .pq-feedback.is-correct { border-right-color: #7dd3a8; background: rgba(45,106,79,0.16); }
+    .pq-feedback.is-wrong { border-right-color: #e88a8a; background: rgba(155,58,58,0.13); }
+    .pq-feedback strong { display: block; color: var(--gold-light); margin-bottom: 5px; }
+    .pq-feedback.is-correct strong { color: #9fe2bc; }
+    .pq-feedback.is-wrong strong { color: #f0a0a0; }
+    .pq-feedback p { color: var(--text-secondary); font-size: .91rem; line-height: 1.7; }
+    .pq-next-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+    .pq-result { text-align: center; animation: pqResultIn .55s cubic-bezier(.2,.75,.25,1) both; }
+    .pq-score-ring {
+      width: 142px;
+      height: 142px;
+      display: grid;
+      place-content: center;
+      margin: 18px auto;
+      border-radius: 50%;
+      border: 5px solid rgba(201,168,76,0.28);
+      background: radial-gradient(circle, rgba(201,168,76,0.12), rgba(201,168,76,0.025));
+      box-shadow: 0 0 34px rgba(201,168,76,0.12), inset 0 0 24px rgba(201,168,76,0.06);
+    }
+    .pq-score-ring strong { color: var(--gold-light); font-size: 2rem; line-height: 1.15; }
+    .pq-score-ring span { color: var(--text-muted); font-size: .78rem; }
+    .pq-result-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .pq-axis-results { display: grid; gap: 9px; margin: 18px 0; text-align: right; }
+    .pq-axis-result { padding: 10px 12px; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; background: rgba(255,255,255,0.03); }
+    .pq-axis-result-top { display: flex; justify-content: space-between; gap: 8px; color: var(--text-secondary); font-size: .82rem; margin-bottom: 7px; }
+    .pq-axis-result-top strong { color: var(--gold-light); white-space: nowrap; }
+    .pq-axis-track { height: 5px; border-radius: 20px; overflow: hidden; background: rgba(255,255,255,0.08); }
+    .pq-axis-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6e9d7d, var(--gold-light)); }
+    .pq-review { margin-top: 18px; text-align: right; }
+    .pq-review h4 { color: var(--gold-light); font-size: 1.08rem; margin-bottom: 10px; }
+    .pq-review-list { display: grid; gap: 10px; }
+    .pq-review-item { padding: 13px; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; background: rgba(255,255,255,0.03); }
+    .pq-review-item.is-wrong { border-right: 3px solid #e88a8a; }
+    .pq-review-item.is-correct { border-right: 3px solid #7dd3a8; }
+    .pq-review-item strong { display: block; color: var(--gold-light); font-size: .86rem; margin-bottom: 5px; }
+    .pq-review-item p { font-size: .86rem; color: var(--text-secondary); margin: 4px 0; line-height: 1.6; }
+    .pq-review-item .pq-review-correct { color: #a8dfbd; }
+    .project-quiz-shell [hidden] { display: none !important; }
+    @keyframes pqAmbient { from { transform: translate3d(0,0,0) scale(.9); } to { transform: translate3d(-18px,20px,0) scale(1.1); } }
+    @keyframes pqQuestionIn { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pqOptionIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pqFeedbackIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pqResultIn { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (max-width: 620px) {
+      .pq-options { grid-template-columns: 1fr; }
+      .pq-option { min-height: 58px; }
+      .pq-facts { gap: 6px; }
+      .pq-fact { padding: 10px 5px; }
+      .pq-fact strong { font-size: 1.12rem; }
+      .pq-fact span { font-size: .68rem; }
+      .pq-game-top { align-items: flex-start; }
+      .pq-primary-btn, .pq-next-btn, .pq-secondary-btn { width: 100%; }
+      .pq-result-actions { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .project-quiz-shell::before { animation: none !important; }
+      .pq-question, .pq-option, .pq-feedback, .pq-result { animation: none !important; }
+    }
 </style>
 </head>
 <body>
@@ -999,6 +1277,71 @@ body { background-image: radial-gradient(ellipse at 12% 18%, rgba(201,168,76,.03
 </section>
 
 
+<section class="section project-quiz-section" id="project-quiz">
+  <div class="section-header fade-in">
+    <div class="section-num"><i class="fa-solid fa-brain"></i></div>
+    <h2>اختبر فهمك: الاختبار الشامل</h2>
+    <p class="subtitle">٣٠ سؤالًا تغطي الأفكار الأساسية في المحاور الخمسة، مع تفسير فوري للإجابات</p>
+  </div>
+
+  <div class="card project-quiz-shell">
+    <div class="pq-intro" id="pqIntro">
+      <span class="pq-kicker"><i class="fa-solid fa-graduation-cap"></i> تحدّي المعرفة</span>
+      <h3>هل استوعبت أفكار المشروع؟</h3>
+      <p>اختبار شامل يقيس فهمك للمفاهيم، والمقاصد الشرعية، والأخلاق العلمية، والتطبيقات الوراثية والطبية، وعلاقة العلم بالتوحيد. أجب عن كل سؤال لتظهر لك الإجابة الصحيحة وسببها.</p>
+      <div class="pq-facts" aria-label="معلومات الاختبار">
+        <div class="pq-fact"><strong>٣٠</strong><span>سؤالًا</span></div>
+        <div class="pq-fact"><strong>٥</strong><span>محاور</span></div>
+        <div class="pq-fact"><strong>١</strong><span>نقطة لكل إجابة صحيحة</span></div>
+      </div>
+      <button type="button" class="pq-primary-btn" id="pqStart">ابدأ الاختبار <i class="fa-solid fa-arrow-left"></i></button>
+      <p class="pq-runtime-status" id="pqRuntimeStatus" role="status" aria-live="polite">لم يبدأ تحميل الاختبار بعد. افتح الصفحة في Chrome أو Safari، ولا تستخدم معاينة الملفات داخل تطبيق التخزين.</p>
+      <noscript><p class="pq-runtime-status" data-state="error">هذا الاختبار يحتاج JavaScript. افتح الملف في متصفح يدعم تشغيل JavaScript، وليس في عارض معاينة.</p></noscript>
+    </div>
+
+    <div class="pq-game" id="pqGame" hidden>
+      <div class="pq-game-top">
+        <span id="pqAxisLabel">المحور الأول</span>
+        <span class="pq-count" id="pqCounter">السؤال ١ من ٣٠</span>
+      </div>
+      <div class="pq-progress" role="progressbar" aria-label="تقدم الاختبار" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" id="pqProgress">
+        <div class="pq-progress-fill" id="pqProgressFill"></div>
+      </div>
+      <div class="pq-question-area" aria-live="polite">
+        <span class="pq-axis-label" id="pqTopic">الفكرة</span>
+        <h3 class="pq-question" id="pqQuestion">نص السؤال</h3>
+        <div class="pq-options" id="pqOptions"></div>
+      </div>
+      <div class="pq-feedback" id="pqFeedback" hidden aria-live="polite">
+        <strong id="pqFeedbackTitle"></strong>
+        <p id="pqFeedbackText"></p>
+      </div>
+      <div class="pq-next-row">
+        <button type="button" class="pq-next-btn" id="pqNext" hidden>السؤال التالي <i class="fa-solid fa-arrow-left"></i></button>
+      </div>
+    </div>
+
+    <div class="pq-result" id="pqResult" hidden aria-live="polite">
+      <span class="pq-kicker"><i class="fa-solid fa-trophy"></i> اكتمل الاختبار</span>
+      <h3 id="pqResultTitle">نتيجتك النهائية</h3>
+      <div class="pq-score-ring">
+        <strong id="pqScore">٠ / ٣٠</strong>
+        <span id="pqPercent">٠٪</span>
+      </div>
+      <p id="pqResultMessage"></p>
+      <div class="pq-axis-results" id="pqAxisResults"></div>
+      <div class="pq-result-actions">
+        <button type="button" class="pq-secondary-btn" id="pqReviewToggle">مراجعة الإجابات</button>
+        <button type="button" class="pq-primary-btn" id="pqRestart">إعادة الاختبار <i class="fa-solid fa-rotate-right"></i></button>
+      </div>
+      <div class="pq-review" id="pqReview" hidden>
+        <h4>مراجعة الأسئلة والإجابات</h4>
+        <div class="pq-review-list" id="pqReviewList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section sources-section" id="sources">
   <div class="section-header fade-in">
     <div class="section-num"><i class="fa-solid fa-book"></i></div>
@@ -1149,6 +1492,227 @@ body { background-image: radial-gradient(ellipse at 12% 18%, rgba(201,168,76,.03
       });
     }
   });
+</script>
+
+<script>
+
+  // Self-contained project quiz: 30 questions, six for each main axis.
+  function initializeProjectQuiz() {
+    const quizQuestions = [{"axis":"المحور الأول: العلم بين النفع والضرر","topic":"المعرفة العلمية والحكم الأخلاقي","q":"ما التمييز الأدق بين المعرفة العلمية والحكم الأخلاقي؟","opts":["العلم يفسّر الظواهر وما يحدث، والقيم تساعد على تحديد ما ينبغي فعله.","القيم تحدد مسبقًا نتائج التجارب العلمية.","كل حقيقة علمية تحمل حكمًا أخلاقيًا ثابتًا بذاتها.","الأرقام والنتائج وحدها تحدد ما ينبغي للمجتمع فعله."],"a":0,"why":"يفصل المشروع بين وصف الظواهر وفهم القوانين من جهة، وبين تقويم القرارات والغايات من جهة أخرى. فالمعرفة تشرح ما يحدث، أما السؤال عمّا ينبغي فعله فيحتاج إلى نظر أخلاقي."},{"axis":"المحور الأول: العلم بين النفع والضرر","topic":"مواضع تأثير القيم في البحث","q":"وفق المشروع، في أي مراحل يمكن أن تتدخل القيم والمصالح في دورة البحث العلمي؟","opts":["في اختيار موضوع التمويل فقط.","في استعمال الاختراع بعد اكتماله فقط.","في اختيار المشكلة والمنهج والعينة والنشر والتطبيق، لا في مرحلة واحدة فقط.","في كتابة عنوان البحث دون بقية المراحل."],"a":2,"why":"يوضح المشروع أن الاختيارات القيمية قد تظهر منذ تحديد المشكلة التي تستحق التمويل، مرورًا بالمنهج والعينة وطريقة عرض النتائج، وصولًا إلى توظيف المعرفة والرقابة على آثارها."},{"axis":"المحور الأول: العلم بين النفع والضرر","topic":"الاستخدام المزدوج","q":"ما المقصود بالاستخدام المزدوج للمعرفة أو التقنية؟","opts":["استخدام التقنية في مختبرين في الوقت نفسه.","إمكان توظيف التقنية في غرض نافع، مع إمكان استغلالها أيضًا في غرض ضار.","أن تكون التقنية نافعة في جميع الظروف.","أن يكون للتقنية استعمال علمي واحد واستعمال تجاري واحد بالضرورة."],"a":1,"why":"الاستخدام المزدوج يعني أن المعرفة أو الأداة نفسها قد تخدم غرضًا مدنيًا نافعًا، وقد تُستغل في إحداث ضرر. لذلك يلزم تقدير المخاطر والرقابة والجهات التي يمكنها الوصول إليها."},{"axis":"المحور الأول: العلم بين النفع والضرر","topic":"مثال على توظيف العلم في الضرر","q":"أي مثال استخدمه المشروع لتوضيح إمكان تحوّل الاكتشاف العلمي إلى أداة تدمير؟","opts":["تطوير وسائل التشخيص المبكر.","تحسين جودة مياه الشرب.","تطوير وسائل الاتصال بين الناس.","استخدام القنابل النووية وما خلّفته في هيروشيما."],"a":3,"why":"أورد المشروع القنابل النووية التي دمرت هيروشيما مثالًا على أن القدرة العلمية لا تضمن وحدها أن تكون النتائج نافعة؛ فطريقة التوظيف والقرارات المحيطة بها حاسمة."},{"axis":"المحور الأول: العلم بين النفع والضرر","topic":"العلم النافع في الرؤية الإسلامية","q":"ما المطالب الثلاثة التي يجمعها الدعاء الوارد في المشروع: «اللهم انفعني بما علمتني وعلمني ما ينفعني وزدني علمًا»؟","opts":["العلم، والنفع، والزيادة في العلم.","المال، والشهرة، والتفوّق على الآخرين.","التجربة، والسرعة، وكثرة المنشورات.","الحفظ، والجدل، وامتلاك الإجابات النهائية."],"a":0,"why":"يشرح المشروع الدعاء باعتباره يجمع طلب المعرفة، وطلب أن تكون نافعة، وطلب الزيادة فيها؛ أي إن قيمة العلم ترتبط بما يحققه من خير ومسؤولية."},{"axis":"المحور الأول: العلم بين النفع والضرر","topic":"الكرامة والحقوق والإنصاف","q":"ما المبدأ الذي يربط التقدم العلمي بأخلاقيات البيولوجيا وحقوق الإنسان في عرض المشروع؟","opts":["تقديم سرعة الابتكار على جميع الاعتبارات الأخرى.","قصر فوائد الاكتشافات على المؤسسات التي موّلتها.","احترام الكرامة والحقوق الأساسية وتقاسم فوائد التقدم بصورة منصفة.","إعفاء التطبيقات العلمية من الرقابة المجتمعية."],"a":2,"why":"يربط المشروع التقدم العلمي باحترام الكرامة الإنسانية والحقوق الأساسية، وبأن تصل ثماره بصورة منصفة، لا أن تنحصر المنافع في فئة بينما تتحمل فئات أخرى الأضرار."},{"axis":"المحور الثاني: العلم في ميزان الشريعة","topic":"حفظ النفس","q":"كيف يشرح المشروع مقصد حفظ النفس؟","opts":["يقتصر على معاقبة المعتدي بعد وقوع الضرر.","يقتصر على علاج المرض بعد ظهوره.","يعني حفظ حياة الفرد دون النظر إلى المجتمع.","يشمل صيانة النفس من التلف، والوقاية من الضرر قبل وقوعه."],"a":3,"why":"حفظ النفس لا يقتصر على القصاص أو علاج الضرر بعد وقوعه؛ بل يشمل الوقاية وصيانة حياة الأفراد والجماعات، مثل مقاومة الأمراض السارية."},{"axis":"المحور الثاني: العلم في ميزان الشريعة","topic":"الضروريات الخمس","q":"أي مجموعة تمثل الضروريات الخمس كما وردت في المشروع؟","opts":["الصحة، والتعليم، والعمل، والسكن، والترفيه.","حفظ الدين، والنفس، والعقل، والنسل، والمال.","حفظ الوقت، واللغة، والسفر، والتجارة، والفنون.","حفظ البيئة، والطاقة، والماء، والغذاء، والصناعة."],"a":1,"why":"يسرد المشروع الكليات الخمس المشهورة في مقاصد الشريعة: حفظ الدين والنفس والعقل والنسل والمال. وتساعد هذه المقاصد على النظر في المصالح والمفاسد عند تقييم التطبيقات العلمية."},{"axis":"المحور الثاني: العلم في ميزان الشريعة","topic":"مراتب المقاصد","q":"أي خيار يطابق مراتب المقاصد الثلاث كما يشرحها المشروع؟","opts":["الطبيعي، والصناعي، والتجاري.","الفردي، والأسري، والدولي.","الضروري، والحاجي، والتحسيني.","العلمي، والتقني، والاقتصادي."],"a":2,"why":"يعرض المشروع مراتب المقاصد في ثلاث فئات: الضروريات التي لا تستقيم الحياة بدونها، والحاجيات التي ترفع الحرج والمشقة، والتحسينيات التي تكمل جودة الحياة وحسن السلوك."},{"axis":"المحور الثاني: العلم في ميزان الشريعة","topic":"الوقاية الصحية","q":"أي مجموعة تمثل أمثلة على حفظ النفس قبل ظهور المرض؟","opts":["انتظار تفاقم المرض قبل التدخل.","حصر الرعاية في المستشفيات الكبرى فقط.","إخفاء المعلومات الصحية لتقليل القلق.","تحسين مياه الشرب، ومراقبة سلامة الغذاء، والتوعية والتشخيص المبكر."],"a":3,"why":"يؤكد المشروع أن الوقاية جزء من حفظ النفس، ويذكر جودة مياه الشرب وسلامة الغذاء والتلقيح وفق الإرشادات والتوعية والتشخيص المبكر ضمن أمثلتها."},{"axis":"المحور الثاني: العلم في ميزان الشريعة","topic":"العدالة في الوصول إلى الرعاية","q":"لماذا لا تكفي المعرفة الطبية وحدها لتحقيق أثر صحي عادل؟","opts":["لأن أثرها يتوقف أيضًا على وصول المعلومات والخدمات إلى الناس بصورة مفهومة ومنصفة.","لأن الوقاية لا تحتاج إلى تعاون المؤسسات والأفراد.","لأن الخدمات الصحية يجب أن تقتصر على من يستطيع دفع تكلفتها.","لأن نشر المعلومات الموثوقة أقل أهمية من توفير الأجهزة."],"a":0,"why":"يشير المشروع إلى أن المعرفة لا تحقق أثرها الكامل إذا لم تصل إلى الناس بلغة مفهومة أو تعذر على الفئات الضعيفة الانتفاع بالخدمات. وهنا تظهر صلة حفظ النفس بالعدل والتكافل."},{"axis":"المحور الثاني: العلم في ميزان الشريعة","topic":"معنى العلم النافع","q":"متى يكون العلم نافعًا وفق المعيار المعروض في المشروع؟","opts":["عندما يزيد عدد المعلومات المنشورة مهما كانت آثارها.","عندما يخدم الإنسان ويحفظ كرامته ويوجّه المعرفة إلى نفع البشرية.","عندما يحقق ربحًا للمؤسسة قبل أي اعتبار آخر.","عندما يظل حبيس المختبر ولا يُستخدم في المجتمع."],"a":1,"why":"يربط المشروع العلم النافع بخدمة الإنسان وصيانة كرامته وتسخير المعرفة لنفع البشرية؛ أي بالجمع بين المعرفة والقيمة والاكتشاف والمسؤولية."},{"axis":"المحور الثالث: الأخلاق العلمية","topic":"النزاهة العلمية","q":"ما الذي يجعل نتائج البحث قابلة للفحص والثقة وفق المشروع؟","opts":["شهرة الباحث وجمال تصميم العرض.","إخفاء حدود الدراسة حتى تبدو النتائج حاسمة.","وصف المنهج بوضوح، وحفظ السجلات، وعرض البيانات بموضوعية وذكر حدود الدراسة.","اختيار النتائج التي تؤيد توقعات الممول فقط."],"a":2,"why":"يعرض المشروع الثقة العلمية بوصفها نتيجة لمنهج واضح وسجلات دقيقة وتحليل غير مضلل وذكر حدود الدراسة، مع إتاحة ما يمكن مشاركته حتى تتم المراجعة وإعادة الاختبار."},{"axis":"المحور الثالث: الأخلاق العلمية","topic":"الأمانة","q":"أي سلوك يناقض قيمة الأمانة العلمية؟","opts":["توثيق خطوات البحث ونتائجه.","الإشارة إلى حدود الدراسة وما لم تثبته.","إتاحة البيانات التي يمكن مشاركتها للمراجعة.","التلاعب بالبيانات أو إخفاء نتائج لا توافق التوقعات."],"a":3,"why":"الأمانة تقتضي عدم التلاعب بالبيانات أو إخفاء الحقائق. عرض النتائج بموضوعية وتوثيقها يساعدان الآخرين على تقييم الدراسة بدل تكوين صورة مضللة."},{"axis":"المحور الثالث: الأخلاق العلمية","topic":"الحذر واليقظة","q":"ما الذي تتطلبه قيمة الحذر واليقظة عند تقييم تطبيق علمي جديد؟","opts":["دراسة العواقب المحتملة والآثار بعيدة المدى قبل التوسع في التطبيق.","الاكتفاء بالفائدة المتوقعة في المدى القصير.","افتراض أن كل ابتكار جديد آمن لمجرد نجاحه تقنيًا.","تجاهل الفئات التي قد تتعرض للمخاطر."],"a":0,"why":"يربط المشروع الحذر بإدراك العواقب المحتملة والتفكير في الآثار طويلة المدى، لا بالاكتفاء بإمكان تنفيذ التقنية أو بفائدتها القريبة."},{"axis":"المحور الثالث: الأخلاق العلمية","topic":"الموافقة المستنيرة","q":"ما الذي ينبغي أن يعرفه المشارك قبل الموافقة على الانضمام إلى بحث؟","opts":["اسم المؤسسة فقط.","هدف الدراسة وما سيُطلب منه والمخاطر المتوقعة وكيفية حفظ معلوماته وحقه في الانسحاب.","النتيجة النهائية التي لم تُعرف بعد.","تفاصيل التمويل وحدها دون معرفة إجراءات الدراسة."],"a":1,"why":"الموافقة الحرة والمستنيرة تقتضي شرح هدف الدراسة وإجراءاتها والمخاطر المتوقعة وحماية المعلومات وإمكان الانسحاب بوضوح، دون ضغط أو إخفاء معلومات مهمة."},{"axis":"المحور الثالث: الأخلاق العلمية","topic":"حماية الفئات الهشة","q":"ما الإجراء الذي يعزز حماية الأطفال أو الأشخاص في أوضاع هشّة المشاركين في البحث؟","opts":["اعتبار موافقة المؤسسة بديلًا دائمًا عن حماية المشاركين.","تقليل المعلومات المقدمة لهم حتى لا يرفضوا المشاركة.","توفير ضمانات إضافية واحترام الخصوصية ومراجعة لجنة أخلاقيات مستقلة.","السماح للجهة الممولة وحدها بتقييم سلامة الدراسة."],"a":2,"why":"يشدد المشروع على ضمانات إضافية للفئات الهشة، واحترام الخصوصية، وعدم تقديم مصلحة المؤسسة على سلامة الإنسان، ودور لجان أخلاقيات مستقلة ومتعددة الاختصاصات."},{"axis":"المحور الثالث: الأخلاق العلمية","topic":"تضارب المصالح ونشر النتائج","q":"إذا طلب ممول إخفاء نتائج سلبية لحماية صورته التجارية، فما التصرف المسؤول؟","opts":["حذف النتائج التي قد تضر بالممول.","نشر بيانات غير مكتملة فورًا دون مراجعة.","إخفاء تضارب المصالح عن القراء.","توثيق النتائج والإفصاح عن تضارب المصالح واتباع مراجعة مستقلة والالتزام بالقانون والسرية."],"a":3,"why":"لا يعني التصرف المسؤول تحريف النتائج أو نشر بيانات غير مكتملة أو خرق السرية. بل يعني توثيق النتائج والإفصاح عن تضارب المصالح واتباع مراجعة مستقلة وإجراءات قانونية سليمة."},{"axis":"المحور الرابع: تطبيقات علمية في الخير","topic":"الهندسة الوراثية وتحرير الجينوم","q":"ما الفرق الذي يوضحه المشروع بين الهندسة الوراثية وتحرير الجينوم؟","opts":["الهندسة الوراثية تشمل مجموعة واسعة من التقنيات، أما تحرير الجينوم فيشير إلى تغييرات مقصودة في مواضع محددة من المادة الوراثية.","المصطلحان يعنيان دائمًا الإجراء نفسه دون أي فرق.","تحرير الجينوم يقتصر على تغيير شكل الخلية دون مادتها الوراثية.","الهندسة الوراثية تتعلق بالبيئة وحدها ولا تتعامل مع المادة الوراثية."],"a":0,"why":"يقدم المشروع الهندسة الوراثية بوصفها مجموعة واسعة من التقنيات التي تتعامل مع المادة الوراثية، بينما يصف تحرير الجينوم بأنه تعديل مقصود لمواضع محددة منها."},{"axis":"المحور الرابع: تطبيقات علمية في الخير","topic":"تقنية كريسبر-كاس9","q":"ما الفكرة الأساسية التي يذكرها المشروع عن تقنية CRISPR-Cas9؟","opts":["أنها تمنع جميع الطفرات بصورة مطلقة.","أنها تتيح تعديلات موجّهة، لكن دقتها لا تعني ضمان كل النتائج أو خلوها من المخاطر.","أنها لا تتعامل مع المادة الوراثية.","أنها تجعل الرقابة الأخلاقية والقانونية غير ضرورية."],"a":1,"why":"يشير المشروع إلى أن كريسبر-كاس9 تتيح إجراء تعديلات موجّهة، لكنه ينبه إلى أن دقة الأداة لا تجعل كل نتيجة مضمونة أو خالية من المخاطر."},{"axis":"المحور الرابع: تطبيقات علمية في الخير","topic":"الخلايا الجسدية","q":"بحسب الشرح في المشروع، ما المقصود عادةً بتعديل الخلايا الجسدية؟","opts":["إجراء تغيير ينتقل حتمًا إلى جميع الأجيال اللاحقة.","تعديل لا يؤثر في الحالة الصحية للشخص.","استهداف خلايا جسم الشخص المعالَج بهدف التأثير في حالته الصحية دون أن يصبح التغيير موروثًا عادةً إلى أبنائه.","تعديل البيئة الخارجية بدل خلايا الجسم."],"a":2,"why":"يميز المشروع بين الخلايا الجسدية والخلايا التناسلية أو الجنينية. ويكون المقصود من تعديل الخلايا الجسدية التأثير في صحة الشخص المعالَج دون انتقال التغيير إلى أبنائه."},{"axis":"المحور الرابع: تطبيقات علمية في الخير","topic":"الخلايا التناسلية أو الجنينية","q":"لماذا تثير التغييرات في الخلايا التناسلية أو الجنينية أسئلة أخلاقية إضافية؟","opts":["لأنها لا يمكن أن تؤثر في أي جيل لاحق.","لأنها لا تحتاج إلى تقييم للمخاطر.","لأن أثرها ينحصر دائمًا في الشخص الذي أُجري له التعديل.","لأن التغييرات قد تنتقل إلى الأجيال اللاحقة، فتُطرح أسئلة الموافقة والمخاطر والعدالة وحقوق الأجيال المقبلة."],"a":3,"why":"يوضح المشروع أن التعديلات في الخلايا التناسلية أو الجنينية قد تنتقل إلى الأجيال اللاحقة؛ لذلك تتسع الأسئلة لتشمل المخاطر والموافقة والعدالة وحقوق من لم يولدوا بعد."},{"axis":"المحور الرابع: تطبيقات علمية في الخير","topic":"أخلاقيات التبرع بالأعضاء","q":"ما القاعدة الأخلاقية الأساسية التي يبرزها المشروع في التبرع بالأعضاء؟","opts":["تقديم مصلحة المتلقي مع تجاهل حقوق المتبرع.","تحقيق منفعة المريض مع حماية المتبرع، والتحقق من الأهلية والموافقة ومنع الإكراه والاستغلال والاتجار.","اعتبار الحاجة الطبية مبررًا كافيًا لأي طريقة للحصول على العضو.","السماح بالضغط على المتبرع إذا كانت النتيجة نافعة."],"a":1,"why":"إنقاذ المريض لا يلغي حقوق المتبرع. ويشترط المشروع تقييم المنفعة والضرر، والتحقق من أهلية المتبرع وموافقته، ومنع الإكراه والاستغلال والاتجار بالأعضاء."},{"axis":"المحور الرابع: تطبيقات علمية في الخير","topic":"ضوابط قرار مجمع الفقه الإسلامي الدولي","q":"بحسب عرض قرار مجمع الفقه الإسلامي الدولي رقم 26 (1/4) في المشروع، أي حالة مُنعت صراحة؟","opts":["نقل ما يتجدد مثل الدم أو الجلد مع استيفاء الشروط.","نقل عضو من متوفى عند الحاجة وبوجود الإذن المعتبر والضوابط.","أخذ عضو حيوي من إنسان حي إذا كان ذلك يؤدي إلى عدم بقائه حيًا.","إجراء تقييم طبي وأخلاقي قبل عملية النقل."],"a":2,"why":"يفصل المشروع بين صور مختلفة للتبرع. ويذكر منع أخذ عضو حيوي من إنسان حي إذا كان ذلك يؤدي إلى عدم بقائه حيًا، كما يذكر شروطًا وضوابط لحالات أخرى؛ لذلك لا يصح تعميم حكم واحد على كل الصور."},{"axis":"المحور الخامس: العلم والتوحيد","topic":"التوحيد وتوجيه العلم","q":"كيف يوجه التوحيد العلم وفق الرؤية المعروضة في المشروع؟","opts":["يجعل المعرفة وسيلة للغرور وادعاء امتلاك الحقيقة المطلقة.","يعفي الإنسان من المسؤولية تجاه البيئة والآخرين.","يستبدل البحث والملاحظة بمجرد الادعاء.","يربط المعرفة بالمسؤولية أمام الله، ويجعل غايتها النفع وعمارة الأرض."],"a":3,"why":"يعرض المشروع التوحيد إطارًا أخلاقيًا يذكر الإنسان بمسؤوليته أمام الله وبكونه مستخلفًا في الأرض، ويوجه المعرفة إلى الخير والإصلاح لا إلى الغرور."},{"axis":"المحور الخامس: العلم والتوحيد","topic":"تكامل المنهج العلمي والقيم","q":"أي عبارة تصف العلاقة بين المنهج العلمي والقيم كما وردت في المشروع؟","opts":["المنهج العلمي يختبر الظواهر بالملاحظة والقياس والتجربة، والقيم تساعد على مساءلة الغايات والحدود والحقوق.","القيم تغني عن التجربة عند اختبار الفرضيات الطبيعية.","الأرقام وحدها تحسم جميع القرارات الأخلاقية.","لا يمكن أن يجتمع البحث العلمي والتفكير الأخلاقي."],"a":0,"why":"يصف المشروع المجالين بأنهما متكاملان: العلم يختبر الفرضيات المتعلقة بالظواهر الطبيعية، بينما تساعد القيم على تقييم الغايات والحدود والحقوق التي ينبغي احترامها."},{"axis":"المحور الخامس: العلم والتوحيد","topic":"مسؤولية العلم تجاه البيئة","q":"أي مجموعة من التطبيقات يذكرها المشروع مثالًا على تسخير العلم لعمارة الأرض؟","opts":["زيادة التلوث واستهلاك الموارد دون قياس.","تنقية المياه وتحسين الزراعة وترشيد الطاقة والحد من التلوث.","حصر البحث في المختبر دون النظر إلى أثره.","تأجيل حماية الموارد إلى الأجيال القادمة وحدها."],"a":1,"why":"يذكر المشروع أبحاث تنقية المياه وتحسين الزراعة وترشيد الطاقة والحد من التلوث بوصفها أمثلة على علم يسهم في تحسين حياة الناس وحماية الموارد."},{"axis":"المحور الخامس: العلم والتوحيد","topic":"العدالة البيئية وتوزيع الأعباء","q":"عند تقييم ابتكار يؤثر في البيئة، ما الأسئلة التي يدعو المشروع إلى طرحها؟","opts":["هل يحقق ربحًا سريعًا فقط؟","هل تستطيع المؤسسة إعلانه قبل اكتمال اختباره؟","هل تصل منافعه بعدل، وما موارده وآثاره، وهل تتحمل فئة معينة مخاطر غير متكافئة؟","هل يمكن تجاهل آثاره إذا كان مفيدًا لفئة واحدة؟"],"a":2,"why":"يدعو المشروع إلى فحص وصول التقنية إلى المناطق الفقيرة، واستهلاكها للموارد، وتوزيع المخاطر والأعباء، ومدى مقبولية آثارها على المدى الطويل."},{"axis":"المحور الخامس: العلم والتوحيد","topic":"معايير تقييم العلم النافع","q":"أي مجموعة تجمع المعايير الخمسة التي يوردها المشروع للحكم على اتجاه العلم؟","opts":["السرعة، والشهرة، والتمويل، وعدد الأجهزة، واتساع الإعلان.","صحة المعرفة، وسلامة الوسيلة، وعدالة النتيجة، ووضوح المسؤولية، وحسن الغاية.","الربح، والمنافسة، والاحتكار، والسرعة، والتوسع.","كثرة المعلومات، وصعوبة اللغة، وندرة الوصول، وقوة المؤسسة، وطول البحث."],"a":1,"why":"يلخص المشروع اتجاه العلم الصحيح في خمسة معايير مترابطة: دليل صحيح قابل للفحص، ووسيلة تحترم الإنسان، ونتائج عادلة، ومسؤولية واضحة، وغاية تتجه إلى النفع والإصلاح."},{"axis":"المحور الخامس: العلم والتوحيد","topic":"سؤال القرار قبل التطبيق","q":"إلى جانب سؤال «هل نستطيع تنفيذ هذا الابتكار؟»، ما الأسئلة العملية التي يقترح المشروع طرحها؟","opts":["هل يمكن تسويقه بسرعة؟ ومن يملك اسمه التجاري؟","هل يبدو متقدمًا؟ وهل سيزيد شهرة الباحث؟","هل سبق أن استخدمته مؤسسة أخرى دون مشكلات؟","هل ينبغي تنفيذه، ولمن، وتحت أي شروط وضوابط؟"],"a":3,"why":"لا يجعل المشروع الإمكان التقني وحده مبررًا للتطبيق؛ بل يدعو إلى تقويم الغاية والمستفيدين والشروط والضوابط واحتمالات الضرر قبل اتخاذ القرار."}];
+    const $ = (id) => document.getElementById(id);
+    const intro = $('pqIntro');
+    const game = $('pqGame');
+    const result = $('pqResult');
+    const review = $('pqReview');
+    const startButton = $('pqStart');
+    const nextButton = $('pqNext');
+    const restartButton = $('pqRestart');
+    const reviewToggle = $('pqReviewToggle');
+    const optionsContainer = $('pqOptions');
+    const feedbackBox = $('pqFeedback');
+    let currentIndex = 0;
+    let score = 0;
+    let answers = [];
+
+    if (!intro || !game || !result || !startButton || !nextButton || !optionsContainer) return;
+
+    const arabicNumber = (value) => String(value).replace(/[0-9]/g, digit => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]);
+
+    function renderQuestion() {
+      const item = quizQuestions[currentIndex];
+      $('pqAxisLabel').textContent = item.axis;
+      $('pqCounter').textContent = `السؤال ${arabicNumber(currentIndex + 1)} من ${arabicNumber(quizQuestions.length)}`;
+      $('pqTopic').textContent = item.topic;
+      $('pqQuestion').textContent = item.q;
+      const progress = Math.round((currentIndex / quizQuestions.length) * 100);
+      $('pqProgressFill').style.width = progress + '%';
+      $('pqProgress').setAttribute('aria-valuenow', String(currentIndex));
+      optionsContainer.innerHTML = '';
+      feedbackBox.hidden = true;
+      feedbackBox.classList.remove('is-correct', 'is-wrong');
+      nextButton.hidden = true;
+      nextButton.innerHTML = currentIndex === quizQuestions.length - 1
+        ? 'عرض النتيجة <i class="fa-solid fa-trophy"></i>'
+        : 'السؤال التالي <i class="fa-solid fa-arrow-left"></i>';
+
+      item.opts.forEach((optionText, optionIndex) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pq-option';
+        const letter = document.createElement('span');
+        letter.className = 'pq-option-letter';
+        letter.textContent = ['A', 'B', 'C', 'D'][optionIndex];
+        const text = document.createElement('span');
+        text.textContent = optionText;
+        button.appendChild(letter);
+        button.appendChild(text);
+        button.addEventListener('click', () => selectAnswer(optionIndex), false);
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    function selectAnswer(selectedIndex) {
+      if (answers[currentIndex] !== undefined) return;
+      const item = quizQuestions[currentIndex];
+      const isCorrect = selectedIndex === item.a;
+      answers[currentIndex] = selectedIndex;
+      if (isCorrect) score += 1;
+
+      const optionButtons = Array.from(optionsContainer.querySelectorAll('.pq-option'));
+      optionButtons.forEach((button, index) => {
+        button.disabled = true;
+        if (index === item.a) button.classList.add('is-correct');
+        if (index === selectedIndex && !isCorrect) button.classList.add('is-wrong');
+      });
+
+      feedbackBox.classList.toggle('is-correct', isCorrect);
+      feedbackBox.classList.toggle('is-wrong', !isCorrect);
+      $('pqFeedbackTitle').textContent = isCorrect ? 'أحسنت! إجابة صحيحة' : 'لنراجع الفكرة معًا';
+      $('pqFeedbackText').textContent = isCorrect
+        ? item.why
+        : `الإجابة الصحيحة هي: ${item.opts[item.a]} — ${item.why}`;
+      feedbackBox.hidden = false;
+      nextButton.hidden = false;
+      const completed = currentIndex + 1;
+      $('pqProgressFill').style.width = ((completed / quizQuestions.length) * 100) + '%';
+      $('pqProgress').setAttribute('aria-valuenow', String(completed));
+    }
+
+    function finishQuiz() {
+      game.hidden = true;
+      result.hidden = false;
+      const total = quizQuestions.length;
+      const percent = Math.round((score / total) * 100);
+      $('pqScore').textContent = `${arabicNumber(score)} / ${arabicNumber(total)}`;
+      $('pqPercent').textContent = `${arabicNumber(percent)}٪`;
+
+      let title = 'نتيجتك النهائية';
+      let message = 'بداية جيدة. راجع التفسيرات وحاول مرة أخرى لترسيخ الأفكار.';
+      if (score >= 27) {
+        title = 'ممتاز! فهم عميق للمشروع';
+        message = 'أظهرت استيعابًا قويًا للمحاور الخمسة وللروابط بين المعرفة والقيم والمسؤولية.';
+      } else if (score >= 23) {
+        title = 'جيد جدًا!';
+        message = 'لديك فهم متين لمعظم الأفكار. راجع بعض التفاصيل لتصل إلى إتقان أكبر.';
+      } else if (score >= 18) {
+        title = 'جيد، واصل التقدم';
+        message = 'استوعبت عددًا مهمًا من الأفكار، وستساعدك مراجعة الإجابات على ربط التفاصيل ببعضها.';
+      }
+      $('pqResultTitle').textContent = title;
+      $('pqResultMessage').textContent = message;
+
+      const axes = [...new Set(quizQuestions.map(item => item.axis))];
+      const axesContainer = $('pqAxisResults');
+      axesContainer.innerHTML = '';
+      axes.forEach(axis => {
+        const indexes = quizQuestions.map((item, index) => item.axis === axis ? index : -1).filter(index => index >= 0);
+        const axisScore = indexes.filter(index => answers[index] === quizQuestions[index].a).length;
+        const row = document.createElement('div');
+        row.className = 'pq-axis-result';
+        const top = document.createElement('div');
+        top.className = 'pq-axis-result-top';
+        const label = document.createElement('span');
+        label.textContent = axis;
+        const stat = document.createElement('strong');
+        stat.textContent = `${arabicNumber(axisScore)} / ${arabicNumber(indexes.length)}`;
+        top.appendChild(label);
+        top.appendChild(stat);
+        const track = document.createElement('div');
+        track.className = 'pq-axis-track';
+        const fill = document.createElement('span');
+        fill.style.width = ((axisScore / indexes.length) * 100) + '%';
+        track.appendChild(fill);
+        row.appendChild(top);
+        row.appendChild(track);
+        axesContainer.appendChild(row);
+      });
+      buildReview();
+      review.hidden = true;
+      reviewToggle.textContent = 'مراجعة الإجابات';
+      $('pqProgressFill').style.width = '100%';
+      $('pqProgress').setAttribute('aria-valuenow', String(total));
+    }
+
+    function buildReview() {
+      const list = $('pqReviewList');
+      list.innerHTML = '';
+      quizQuestions.forEach((item, index) => {
+        const selected = answers[index];
+        const correct = selected === item.a;
+        const card = document.createElement('article');
+        card.className = `pq-review-item ${correct ? 'is-correct' : 'is-wrong'}`;
+        const heading = document.createElement('strong');
+        heading.textContent = `السؤال ${arabicNumber(index + 1)} · ${item.topic}`;
+        const question = document.createElement('p');
+        question.textContent = item.q;
+        const yourAnswer = document.createElement('p');
+        yourAnswer.textContent = `إجابتك: ${item.opts[selected]}`;
+        const correctAnswer = document.createElement('p');
+        correctAnswer.className = 'pq-review-correct';
+        correctAnswer.textContent = `الإجابة الصحيحة: ${item.opts[item.a]}`;
+        const explanation = document.createElement('p');
+        explanation.textContent = item.why;
+        card.appendChild(heading);
+        card.appendChild(question);
+        card.appendChild(yourAnswer);
+        card.appendChild(correctAnswer);
+        card.appendChild(explanation);
+        list.appendChild(card);
+      });
+    }
+
+    function beginQuiz() {
+      currentIndex = 0;
+      score = 0;
+      answers = [];
+      intro.hidden = true;
+      result.hidden = true;
+      game.hidden = false;
+      renderQuestion();
+    }
+
+    // The script is loaded after the quiz markup, so bind directly now.
+    // Mobile Safari and Chrome dispatch a standard click for taps on buttons.
+    startButton.onclick = beginQuiz;
+    nextButton.onclick = () => {
+      if (answers[currentIndex] === undefined) return;
+      if (currentIndex < quizQuestions.length - 1) {
+        currentIndex += 1;
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    };
+    if (restartButton) restartButton.onclick = beginQuiz;
+    if (reviewToggle) reviewToggle.onclick = () => {
+      review.hidden = !review.hidden;
+      reviewToggle.textContent = review.hidden ? 'مراجعة الإجابات' : 'إخفاء المراجعة';
+      if (!review.hidden) review.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // A visible ready signal confirms that the separate script actually loaded.
+    const runtimeStatus = $('pqRuntimeStatus');
+    if (runtimeStatus) {
+      runtimeStatus.textContent = 'الاختبار جاهز. اضغط على زر «ابدأ الاختبار». ';
+      runtimeStatus.dataset.state = 'ready';
+    }
+    startButton.dataset.quizReady = 'true';
+    window.startProjectQuiz = beginQuiz;
+    window.projectQuizReady = true;
+  }
+
+  // This external file is included after the quiz markup; initialization is immediate.
+  try {
+    initializeProjectQuiz();
+  } catch (error) {
+    console.error('Project quiz failed to initialize:', error);
+    const status = document.getElementById('pqRuntimeStatus');
+    if (status) {
+      status.textContent = 'تعذر تحميل الاختبار. افتح الصفحة في Chrome أو Safari مباشرة، وتأكد من وجود ملف quiz.js بجانب index.html.';
+      status.dataset.state = 'error';
+    }
+  }
+
 </script>
 
 </body>

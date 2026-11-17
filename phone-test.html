@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1f1a">
+  <title>Phone JavaScript and Touch Test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 22px;
+      background: #0a1f1a; color: #f5f0e8; font: 16px system-ui, sans-serif; }
+    main { width: min(100%, 520px); padding: 24px; border: 1px solid #54735e;
+      border-radius: 20px; background: #12382b; text-align: center; }
+    h1 { color: #e8c96a; font-size: 1.35rem; }
+    p, small { color: #d5ddcf; line-height: 1.65; }
+    #state { min-height: 2.8em; margin: 25px 0; color: #ffc98e; font-weight: 800; }
+    button { width: 100%; min-height: 66px; border: 0; border-radius: 14px;
+      background: #e8c96a; color: #10251c; font-size: 1.1rem; font-weight: 800;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Mobile browser test</h1>
+    <p>This test checks whether the page is running as a normal website with JavaScript enabled.</p>
+    <div id="state" role="status" aria-live="polite">JavaScript has not started.</div>
+    <button id="tap" type="button">Tap test — 0</button>
+    <small>If the status does not change to READY, or the counter does not increase, the current app/viewer is blocking JavaScript or taps.</small>
+  </main>
+  <script>
+    (() => {
+      let count = 0;
+      const state = document.getElementById('state');
+      const button = document.getElementById('tap');
+      state.textContent = 'READY — JavaScript is running.';
+      state.style.color = '#a8dfbd';
+      button.addEventListener('click', () => {
+        count += 1;
+        button.textContent = `Tap test — ${count}`;
+        state.textContent = `SUCCESS — tap ${count} registered.`;
+      });
+    })();
+  </script>
+</body>
+</html>
